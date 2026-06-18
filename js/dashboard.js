@@ -125,37 +125,9 @@ window.Dashboard = {
           </div>
         </div>
 
-        <!-- Featured Daily Coding Arena Widget -->
-        <div class="daily-arena-widget-card glass-card ${arenaDone ? 'completed-glow' : ''}">
-          <div class="arena-widget-header">
-            <div class="arena-title-wrapper">
-              <span class="arena-widget-icon">⚔️</span>
-              <div>
-                <h3>Daily Coding Arena</h3>
-                <span class="arena-difficulty-pill ${challenge.level}">${challenge.level.toUpperCase()} LEVEL</span>
-              </div>
-            </div>
-            ${arenaDone ? '<span class="arena-completed-badge">COMPLETED +150 XP</span>' : ''}
-          </div>
-          
-          <div class="arena-widget-body">
-            <p>Solve <strong>2 Stream</strong> and <strong>2 DSA</strong> problems daily to unlock rewards and build interview habits.</p>
-            <div class="arena-progress-container">
-              <div class="arena-progress-text">
-                <span>Progress: ${completedCount} / 4 Questions Solved</span>
-                <span>${arenaProgressPercent}%</span>
-              </div>
-              <div class="arena-progress-bar-outer">
-                <div class="arena-progress-bar-fill" style="width: ${arenaProgressPercent}%"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="arena-widget-footer">
-            <button class="primary-btn ${arenaDone ? 'secondary-btn' : 'pulse-glow'}" onclick="window.Router.navigate('daily-challenge')">
-              ${arenaDone ? '👁️ Review Today\'s Arena' : '⚔️ Enter Coding Arena'}
-            </button>
-          </div>
+        <!-- Embedded Daily Coding Arena -->
+        <div id="dashboard-daily-arena-container" class="dashboard-arena-wrapper">
+          <!-- DailyChallenge.render will populate this -->
         </div>
 
         <!-- Progress and XP -->
@@ -217,6 +189,9 @@ window.Dashboard = {
         </div>
       </div>
     `;
+
+    // Render the embedded daily coding arena
+    window.DailyChallenge.render('dashboard-daily-arena-container');
   },
 
   launchRandomQuiz() {

@@ -2294,6 +2294,10 @@ body {
   color: #000;
 }
 
+.dashboard-arena-wrapper {
+  grid-column: span 2;
+}
+
 /* ==========================================================================
    RESPONSIVE DESIGN (MEDIA QUERIES)
    ========================================================================== */
@@ -2307,6 +2311,18 @@ body {
     flex-direction: column;
     text-align: center;
     gap: 20px;
+  }
+  
+  .dashboard-arena-wrapper {
+    grid-column: span 1;
+  }
+
+  .challenge-body {
+    grid-template-columns: 1fr;
+  }
+
+  .challenge-tabs {
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .progress-row {

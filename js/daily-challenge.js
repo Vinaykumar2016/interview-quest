@@ -6,6 +6,7 @@ window.DailyChallenge = {
   isSolutionRevealed: false,
 
   render(containerId) {
+    this.lastContainerId = containerId;
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -24,7 +25,11 @@ window.DailyChallenge = {
       setTimeout(() => {
         window.Gamification.addXp(150, "Completed Daily Coding Challenge! 🏆");
         if (window.SoundEffects) window.SoundEffects.playSuccess();
-        this.render(containerId); // Redraw with claimed XP status
+        if (containerId === 'dashboard-daily-arena-container') {
+          window.Dashboard.render('app-container');
+        } else {
+          this.render(containerId);
+        }
       }, 100);
     }
 
@@ -103,7 +108,9 @@ window.DailyChallenge = {
             <h1>🔥 Daily Coding Arena</h1>
             <p>Maintain your streak to increase the challenge! Current level: <strong>${challenge.level.toUpperCase()}</strong> (Streak: ${state.user.currentStreak} days)</p>
           </div>
-          <button class="back-btn-header" onclick="window.Router.navigate('dashboard')">🏠 Dashboard</button>
+          ${containerId !== 'dashboard-daily-arena-container' ? `
+            <button class="back-btn-header" onclick="window.Router.navigate('dashboard')">🏠 Dashboard</button>
+          ` : ''}
         </div>
 
         <!-- Completion status banner -->
@@ -223,13 +230,13 @@ window.DailyChallenge = {
     this.currentTabType = type;
     this.currentTabIndex = index;
     this.isSolutionRevealed = false;
-    this.render('app-container');
+    this.render(this.lastContainerId || 'app-container');
   },
 
   revealSolution() {
     if (window.SoundEffects) window.SoundEffects.playClick();
     this.isSolutionRevealed = true;
-    this.render('app-container');
+    this.render(this.lastContainerId || 'app-container');
   },
 
   markQuestion(isCorrect) {
@@ -258,6 +265,10 @@ window.DailyChallenge = {
       this.isSolutionRevealed = false;
     }
 
-    this.render('app-container');
+    if (this.lastContainerId === 'dashboard-daily-arena-container') {
+      window.Dashboard.render('app-container');
+    } else {
+      this.render(this.lastContainerId || 'app-container');
+    }
   }
 };
