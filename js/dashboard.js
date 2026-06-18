@@ -107,6 +107,39 @@ window.Dashboard = {
     const arenaDone = completedCount === 4;
     const arenaProgressPercent = (completedCount / 4) * 100;
 
+    // Spring Client Prep Hub html
+    let springPrepTopicsHtml = '';
+    const springCategory = window.CATEGORIES.find(c => c.id === 'spring');
+    if (springCategory) {
+      springCategory.topics.forEach(topic => {
+        const prog = freshState.progress[topic.id] || { notesRead: false, flashcardsCompleted: false, quizScores: [], interviewsDone: 0 };
+        const maxScore = prog.quizScores && prog.quizScores.length > 0 ? Math.max(...prog.quizScores) + '%' : 'Not taken';
+        
+        springPrepTopicsHtml += `
+          <div class="spring-topic-mini-card glass-card">
+            <div class="spring-topic-title">
+              <span class="spring-topic-icon">${topic.icon || '🍃'}</span>
+              <h4>${topic.name}</h4>
+            </div>
+            
+            <div class="spring-topic-stats">
+              <span class="stat-item ${prog.notesRead ? 'done' : ''}">📖 Notes: ${prog.notesRead ? '✅' : '⏳'}</span>
+              <span class="stat-item ${prog.flashcardsCompleted ? 'done' : ''}">🃏 Cards: ${prog.flashcardsCompleted ? '✅' : '⏳'}</span>
+              <span class="stat-item ${prog.quizScores.length > 0 ? 'done' : ''}">📝 Quiz: ${maxScore}</span>
+              <span class="stat-item ${prog.interviewsDone > 0 ? 'done' : ''}">🎙️ Mock: ${prog.interviewsDone > 0 ? '✅' : '⏳'}</span>
+            </div>
+            
+            <div class="spring-topic-actions">
+              <button class="action-btn notes-btn" onclick="window.Router.navigate('notes?topic=${topic.id}')" title="Study Notes">📖 Notes</button>
+              <button class="action-btn cards-btn" onclick="window.Router.navigate('flashcards?topic=${topic.id}')" title="Study Flashcards">🃏 Cards</button>
+              <button class="action-btn quiz-btn" onclick="window.Router.navigate('quiz?topic=${topic.id}')" title="Take Quiz">📝 Quiz</button>
+              <button class="action-btn mock-btn" onclick="window.Router.navigate('interview?topic=${topic.id}')" title="Start Mock Interview">🎙️ Mock</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
     container.innerHTML = `
       <div class="dashboard-grid">
         <!-- Main welcome banner -->
@@ -128,6 +161,20 @@ window.Dashboard = {
         <!-- Embedded Daily Coding Arena -->
         <div id="dashboard-daily-arena-container" class="dashboard-arena-wrapper">
           <!-- DailyChallenge.render will populate this -->
+        </div>
+
+        <!-- Embedded Spring Boot Client Prep Hub -->
+        <div class="spring-prep-hub-card glass-card">
+          <div class="spring-hub-header">
+            <span class="spring-hub-icon">🍃</span>
+            <div>
+              <h3>Spring Client Interview Prep</h3>
+              <p>Direct study shortcuts for the core Spring framework topics in Pratiksha's client interview prep.</p>
+            </div>
+          </div>
+          <div class="spring-topics-grid">
+            ${springPrepTopicsHtml}
+          </div>
         </div>
 
         <!-- Progress and XP -->
