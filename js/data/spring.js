@@ -422,7 +422,7 @@ window.CATEGORIES.push({
           '<strong>Authentication vs. Authorization:</strong> <strong>Authentication</strong> is verifying identity (who you are, managed by <code>AuthenticationManager</code> and <code>AuthenticationProvider</code>). <strong>Authorization</strong> is verifying permissions (what you are allowed to do, managed by <code>AuthorizationManager</code>).',
           '<strong>JWT (JSON Web Token):</strong> A stateless token format consisting of Header, Payload, and Signature. It stores user claims and is signed by the server, allowing the backend to remain stateless.',
           '<strong>CSRF (Cross-Site Request Forgery):</strong> An exploit where an unauthorized command is transmitted from a trusted user. Spring Security provides CSRF tokens to validate state-changing requests (disabled for stateless APIs using JWTs).',
-          '<strong>Method Security:</strong> Enabling security annotations at the method layer using <code>@EnableMethodSecurity</code>. Annotations: <code>@PreAuthorize("hasRole('ADMIN')")</code>, <code>@PostAuthorize</code>, <code>@Secured</code>.',
+          '<strong>Method Security:</strong> Enabling security annotations at the method layer using <code>@EnableMethodSecurity</code>. Annotations: <code>@PreAuthorize("hasRole(\'ADMIN\')")</code>, <code>@PostAuthorize</code>, <code>@Secured</code>.',
           '<strong>SecurityContext:</strong> Stores details of the currently authenticated user. Lives inside `SecurityContextHolder` which uses `ThreadLocal` storage by default.'
         ],
         codeExamples: [

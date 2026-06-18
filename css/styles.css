@@ -2071,6 +2071,7 @@ body {
   text-align: left;
   border-radius: 12px;
   border: 1px solid var(--border-glass);
+  color: var(--text-primary);
 }
 
 .challenge-tab.active {
@@ -2096,7 +2097,7 @@ body {
 .tab-label {
   display: block;
   font-size: 10px;
-  color: var(--text-muted);
+  color: #94A3B8;
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -2104,6 +2105,7 @@ body {
 .tab-title-text {
   font-size: 12px;
   font-weight: 600;
+  color: #F8FAFC;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
