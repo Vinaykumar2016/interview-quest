@@ -95,6 +95,18 @@ window.Dashboard = {
       });
     }
 
+    // Daily Coding Arena status
+    window.DailyChallenge.initDailyChallenge();
+    const challenge = freshState.dailyChallenge;
+    let completedCount = 0;
+    if (challenge.completed.stream[0]) completedCount++;
+    if (challenge.completed.stream[1]) completedCount++;
+    if (challenge.completed.dsa[0]) completedCount++;
+    if (challenge.completed.dsa[1]) completedCount++;
+
+    const arenaDone = completedCount === 4;
+    const arenaProgressPercent = (completedCount / 4) * 100;
+
     container.innerHTML = `
       <div class="dashboard-grid">
         <!-- Main welcome banner -->
@@ -110,6 +122,39 @@ window.Dashboard = {
           <div class="level-showcase">
             <div class="level-number">${user.level}</div>
             <span class="level-label">CURRENT LEVEL</span>
+          </div>
+        </div>
+
+        <!-- Featured Daily Coding Arena Widget -->
+        <div class="daily-arena-widget-card glass-card ${arenaDone ? 'completed-glow' : ''}">
+          <div class="arena-widget-header">
+            <div class="arena-title-wrapper">
+              <span class="arena-widget-icon">⚔️</span>
+              <div>
+                <h3>Daily Coding Arena</h3>
+                <span class="arena-difficulty-pill ${challenge.level}">${challenge.level.toUpperCase()} LEVEL</span>
+              </div>
+            </div>
+            ${arenaDone ? '<span class="arena-completed-badge">COMPLETED +150 XP</span>' : ''}
+          </div>
+          
+          <div class="arena-widget-body">
+            <p>Solve <strong>2 Stream</strong> and <strong>2 DSA</strong> problems daily to unlock rewards and build interview habits.</p>
+            <div class="arena-progress-container">
+              <div class="arena-progress-text">
+                <span>Progress: ${completedCount} / 4 Questions Solved</span>
+                <span>${arenaProgressPercent}%</span>
+              </div>
+              <div class="arena-progress-bar-outer">
+                <div class="arena-progress-bar-fill" style="width: ${arenaProgressPercent}%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="arena-widget-footer">
+            <button class="primary-btn ${arenaDone ? 'secondary-btn' : 'pulse-glow'}" onclick="window.Router.navigate('daily-challenge')">
+              ${arenaDone ? '👁️ Review Today\'s Arena' : '⚔️ Enter Coding Arena'}
+            </button>
           </div>
         </div>
 

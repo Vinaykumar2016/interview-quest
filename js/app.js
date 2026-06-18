@@ -8,7 +8,8 @@ window.Router = {
     'flashcards': window.Flashcards,
     'quiz': window.Quiz,
     'interview': window.Interview,
-    'progress': window.Progress
+    'progress': window.Progress,
+    'daily-challenge': window.DailyChallenge
   },
 
   init() {
@@ -17,6 +18,7 @@ window.Router = {
   },
 
   navigate(routePath) {
+    if (window.SoundEffects) window.SoundEffects.playClick();
     window.location.hash = '/' + routePath;
   },
 
@@ -64,6 +66,7 @@ window.Router = {
   updateHeaderProfile() {
     const state = window.AppStorage.loadState();
     const user = state.user;
+    const soundOn = state.settings ? state.settings.soundEnabled : true;
     
     const profileEl = document.getElementById('profile-summary-header');
     if (profileEl) {
@@ -74,7 +77,27 @@ window.Router = {
           <span class="header-xp-bar-txt">${user.xp}/${window.Gamification.getXpForLevel(user.level)} XP</span>
         </div>
         <div class="header-streak-badge">🔥 ${user.currentStreak}</div>
+        <button class="sound-toggle-btn" onclick="event.stopPropagation(); window.Router.toggleSound();">
+          ${soundOn ? '🔊' : '🔇'}
+        </button>
       `;
+    }
+  },
+
+  toggleSound() {
+    const state = window.AppStorage.loadState();
+    if (!state.settings) state.settings = { soundEnabled: true };
+    
+    state.settings.soundEnabled = !state.settings.soundEnabled;
+    window.AppStorage.saveState(state);
+    
+    this.updateHeaderProfile();
+    
+    if (window.SoundEffects) {
+      window.SoundEffects.init();
+      if (state.settings.soundEnabled) {
+        window.SoundEffects.playClick();
+      }
     }
   }
 };
@@ -86,4 +109,15 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Set up router
   window.Router.init();
+
+  // Initialize Web Audio API on first user click gesture
+  const initAudio = () => {
+    if (window.SoundEffects) {
+      window.SoundEffects.init();
+    }
+    window.removeEventListener('click', initAudio);
+    window.removeEventListener('keydown', initAudio);
+  };
+  window.addEventListener('click', initAudio);
+  window.addEventListener('keydown', initAudio);
 });

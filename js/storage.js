@@ -18,6 +18,20 @@ const DEFAULT_STATE = {
     list: [], // { id, type, topicId, text, required, current, xp, completed }
     completedAll: false
   },
+  dailyChallenge: {
+    date: null,
+    level: 'easy',
+    streamIds: [], // indices in DAILY_CHALLENGES_DB
+    dsaIds: [], // indices in DAILY_CHALLENGES_DB
+    completed: {
+      stream: [false, false],
+      dsa: [false, false]
+    },
+    claimedXp: false
+  },
+  settings: {
+    soundEnabled: true
+  },
   badges: [], // { id, name, icon, desc, unlockedDate }
   dailyLog: [] // { date: 'YYYY-MM-DD', xpEarned: number }
 };
@@ -38,6 +52,13 @@ window.AppStorage = {
       if (!parsed.user || parsed.user.name !== 'Pratiksha') {
         parsed.user = parsed.user || {};
         parsed.user.name = 'Pratiksha';
+      }
+      // Merge new schema updates
+      if (!parsed.dailyChallenge) {
+        parsed.dailyChallenge = JSON.parse(JSON.stringify(DEFAULT_STATE.dailyChallenge));
+      }
+      if (!parsed.settings) {
+        parsed.settings = JSON.parse(JSON.stringify(DEFAULT_STATE.settings));
       }
       return parsed;
     } catch (e) {

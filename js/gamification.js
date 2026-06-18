@@ -46,6 +46,7 @@ window.Gamification = {
     // Trigger effects
     if (amount > 0) {
       this.showXpNotification(amount, reason);
+      if (window.SoundEffects) window.SoundEffects.playXp();
     }
     if (leveledUp) {
       this.showLevelUpModal(user.level);
@@ -292,6 +293,7 @@ window.Gamification = {
     `;
     modal.classList.add('active');
     this.triggerConfetti();
+    if (window.SoundEffects) window.SoundEffects.playLevelUp();
   },
 
   showBadgeModal(badge) {
@@ -309,6 +311,7 @@ window.Gamification = {
     `;
     modal.classList.add('active');
     this.triggerConfetti();
+    if (window.SoundEffects) window.SoundEffects.playLevelUp();
   },
 
   triggerConfetti() {
@@ -329,5 +332,72 @@ window.Gamification = {
     }
 
     setTimeout(() => particlesContainer.remove(), 4000);
+  }
+};
+
+window.SoundEffects = {
+  ctx: null,
+
+  init() {
+    if (this.ctx) return;
+    try {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+      console.warn("Web Audio API not supported in this browser.", e);
+    }
+  },
+
+  isSoundEnabled() {
+    const state = window.AppStorage.loadState();
+    return state.settings && state.settings.soundEnabled;
+  },
+
+  playTone(freq, type, duration, startTimeOffset = 0) {
+    this.init();
+    if (!this.ctx || !this.isSoundEnabled()) return;
+
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+
+    const osc = this.ctx.createOscillator();
+    const gainNode = this.ctx.createGain();
+
+    osc.type = type || 'sine';
+    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + startTimeOffset);
+
+    // Envelope
+    gainNode.gain.setValueAtTime(0.001, this.ctx.currentTime + startTimeOffset);
+    gainNode.gain.linearRampToValueAtTime(0.08, this.ctx.currentTime + startTimeOffset + 0.02);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + startTimeOffset + duration);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.ctx.destination);
+
+    osc.start(this.ctx.currentTime + startTimeOffset);
+    osc.stop(this.ctx.currentTime + startTimeOffset + duration);
+  },
+
+  playClick() {
+    this.playTone(800, 'sine', 0.08);
+  },
+
+  playXp() {
+    this.playTone(523.25, 'sine', 0.15, 0); // C5
+    this.playTone(659.25, 'sine', 0.25, 0.06); // E5
+  },
+
+  playSuccess() {
+    this.playTone(523.25, 'sine', 0.12, 0); // C5
+    this.playTone(659.25, 'sine', 0.12, 0.08); // E5
+    this.playTone(783.99, 'sine', 0.12, 0.16); // G5
+    this.playTone(1046.50, 'sine', 0.35, 0.24); // C6
+  },
+
+  playLevelUp() {
+    const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, idx) => {
+      this.playTone(freq, 'triangle', 0.35, idx * 0.07);
+    });
   }
 };

@@ -307,3 +307,214 @@ window.CATEGORIES.push({
     }
   ]
 });
+
+window.DAILY_CHALLENGES_DB = {
+  stream: {
+    easy: [
+      {
+        id: 'str_e1',
+        title: 'Filter & Square Even Numbers',
+        description: 'Given a list of integers, write a Java Stream pipeline to filter out all odd numbers, square the remaining even numbers, and collect them into a List.',
+        initialCode: 'public List<Integer> squareEvens(List<Integer> numbers) {\n    return numbers.stream()\n        // TODO: Filter evens, square them, and collect\n        .collect(Collectors.toList());\n}',
+        solutionCode: 'public List<Integer> squareEvens(List<Integer> numbers) {\n    return numbers.stream()\n        .filter(n -> n % 2 == 0)\n        .map(n -> n * n)\n        .collect(Collectors.toList());\n}',
+        explanation: '1. `filter(n -> n % 2 == 0)` processes elements and retains only even values.\n2. `map(n -> n * n)` takes each even integer and multiplies it by itself.\n3. `collect(Collectors.toList())` saves the stream results back into a new List.'
+      },
+      {
+        id: 'str_e2',
+        title: 'Names to UpperCase and Join',
+        description: 'Given a list of names, filter out names that have a length less than 4, convert the remaining names to uppercase, and join them with a comma and a space (", ").',
+        initialCode: 'public String formatNames(List<String> names) {\n    return names.stream()\n        // TODO: Filter, uppercase, and join with ", "\n        .collect(Collectors.joining());\n}',
+        solutionCode: 'public String formatNames(List<String> names) {\n    return names.stream()\n        .filter(name -> name.length() >= 4)\n        .map(String::toUpperCase)\n        .collect(Collectors.joining(", "));\n}',
+        explanation: 'We filter using `length() >= 4`, map names using method reference `String::toUpperCase`, and collect with `Collectors.joining(", ")` to concatenate elements with the comma delimiter.'
+      },
+      {
+        id: 'str_e3',
+        title: 'Find Max Value',
+        description: 'Given a list of Double values, find the maximum value. If the list is empty, return 0.0.',
+        initialCode: 'public Double findMax(List<Double> values) {\n    return values.stream()\n        // TODO: Find max value or return 0.0\n        .orElse(0.0);\n}',
+        solutionCode: 'public Double findMax(List<Double> values) {\n    return values.stream()\n        .mapToDouble(Double::doubleValue)\n        .max()\n        .orElse(0.0);\n}',
+        explanation: 'We map the stream to a primitive `DoubleStream` via `mapToDouble()`, invoke `.max()` which returns an `OptionalDouble`, and use `.orElse(0.0)` to gracefully handle empty streams.'
+      },
+      {
+        id: 'str_e4',
+        title: 'Filter Non-Empty Strings',
+        description: 'Given a list of strings, count the number of non-empty strings.',
+        initialCode: 'public long countNonEmpty(List<String> list) {\n    return list.stream()\n        // TODO: Filter non-empty and count\n        .count();\n}',
+        solutionCode: 'public long countNonEmpty(List<String> list) {\n    return list.stream()\n        .filter(s -> s != null && !s.trim().isEmpty())\n        .count();\n}',
+        explanation: 'We filter out null and empty/whitespace strings using `s != null && !s.trim().isEmpty()`, and then use the terminal operation `count()` to get the result.'
+      }
+    ],
+    medium: [
+      {
+        id: 'str_m1',
+        title: 'Group and Count Word Frequency',
+        description: 'Given a string representing a paragraph, split it into words by space, count the frequency of each word (case-insensitive), and return a `Map<String, Long>`.',
+        initialCode: 'public Map<String, Long> wordFreq(String paragraph) {\n    return Arrays.stream(paragraph.toLowerCase().split("\\\\s+"))\n        // TODO: Group by word and count\n        .collect(Collectors.toMap(k -> k, v -> 1L));\n}',
+        solutionCode: 'public Map<String, Long> wordFreq(String paragraph) {\n    return Arrays.stream(paragraph.toLowerCase().split("\\\\s+"))\n        .filter(w -> !w.isEmpty())\n        .collect(Collectors.groupingBy(\n            Function.identity(),\n            Collectors.counting()\n        ));\n}',
+        explanation: 'We use `groupingBy(Function.identity())` to group the words by themselves, and pass the downstream collector `Collectors.counting()` to aggregate the counts in each group.'
+      },
+      {
+        id: 'str_m2',
+        title: 'Partition Employees by Salary',
+        description: 'Given a list of Employees, partition them into high earners (salary > 80,000) and others, returning a `Map<Boolean, List<Employee>>`.',
+        initialCode: 'public Map<Boolean, List<Employee>> partitionBySalary(List<Employee> employees) {\n    return employees.stream()\n        // TODO: Partition by salary > 80,000\n        .collect(Collectors.partitioningBy(e -> true));\n}',
+        solutionCode: 'public Map<Boolean, List<Employee>> partitionBySalary(List<Employee> employees) {\n    return employees.stream()\n        .collect(Collectors.partitioningBy(\n            e -> e.getSalary() > 80000\n        ));\n}',
+        explanation: '`Collectors.partitioningBy` is a special case of `groupingBy` that accepts a predicate and splits elements into a Map with keys `true` and `false`.'
+      },
+      {
+        id: 'str_m3',
+        title: 'Average Age by Country',
+        description: 'Given a list of Persons, calculate the average age of persons in each country, returning a `Map<String, Double>`.',
+        initialCode: 'public Map<String, Double> avgAgeByCountry(List<Person> people) {\n    return people.stream()\n        // TODO: Group by country, average age\n        .collect(Collectors.toMap(Person::getCountry, p -> 0.0));\n}',
+        solutionCode: 'public Map<String, Double> avgAgeByCountry(List<Person> people) {\n    return people.stream()\n        .collect(Collectors.groupingBy(\n            Person::getCountry,\n            Collectors.averagingInt(Person::getAge)\n        ));\n}',
+        explanation: 'We group by `Person::getCountry` and use the downstream collector `Collectors.averagingInt(Person::getAge)` to automatically calculate the average age in each group.'
+      },
+      {
+        id: 'str_m4',
+        title: 'Flatten and Filter List of Lists',
+        description: 'Given a list of lists of strings, flatten them into a single list of strings, keeping only those that start with "J" and collecting to a List.',
+        initialCode: 'public List<String> flattenAndFilter(List<List<String>> nested) {\n    return nested.stream()\n        // TODO: Flatten, filter startsWith "J", collect\n        .collect(Collectors.toList());\n}',
+        solutionCode: 'public List<String> flattenAndFilter(List<List<String>> nested) {\n    return nested.stream()\n        .flatMap(Collection::stream)\n        .filter(s -> s.startsWith("J"))\n        .collect(Collectors.toList());\n}',
+        explanation: '`flatMap(Collection::stream)` converts each list into a stream and flattens them into a single stream. Then `filter` and `collect` finish the pipeline.'
+      }
+    ],
+    hard: [
+      {
+        id: 'str_h1',
+        title: 'Highest Paid Employee per Department',
+        description: 'Given a list of Employees, find the highest-paid employee in each department. Return a `Map<String, Employee>`.',
+        initialCode: 'public Map<String, Employee> topEarners(List<Employee> employees) {\n    return employees.stream()\n        // TODO: Group by department and find max salary employee\n        .collect(Collectors.toMap(Employee::getDept, e -> e));\n}',
+        solutionCode: 'public Map<String, Employee> topEarners(List<Employee> employees) {\n    return employees.stream()\n        .collect(Collectors.groupingBy(\n            Employee::getDepartment,\n            Collectors.collectingAndThen(\n                Collectors.maxBy(Comparator.comparingDouble(Employee::getSalary)),\n                opt -> opt.orElse(null)\n            )\n        ));\n}',
+        explanation: 'We group by department. We use `maxBy` to find the employee with max salary. Since `maxBy` returns an `Optional`, we wrap it in `collectingAndThen` to extract the employee or return null.'
+      },
+      {
+        id: 'str_h2',
+        title: 'First Non-Repeated Character',
+        description: 'Given a string, find the first non-repeated character in O(n) time using Java Streams. If none, return Optional.empty().',
+        initialCode: 'public Optional<Character> firstNonRepeat(String str) {\n    return str.chars()\n        // TODO: Stream characters, count frequency, find first with count == 1\n        .mapToObj(c -> (char)c)\n        .findFirst();\n}',
+        solutionCode: 'public Optional<Character> firstNonRepeat(String str) {\n    Map<Character, Long> freq = str.chars()\n        .mapToObj(c -> (char) c)\n        .collect(Collectors.groupingBy(\n            Function.identity(),\n            LinkedHashMap::new,\n            Collectors.counting()\n        ));\n        \n    return freq.entrySet().stream()\n        .filter(entry -> entry.getValue() == 1)\n        .map(Map.Entry::getKey)\n        .findFirst();\n}',
+        explanation: '1. `str.chars().mapToObj(...)` converts the int stream into Character objects.\n2. We collect into a `LinkedHashMap` to preserve character insertion order, counting frequencies.\n3. We stream the map entries, filter for value == 1, and return the key of the first match.'
+      },
+      {
+        id: 'str_h3',
+        title: 'Parallel Stream Transaction Statistics',
+        description: 'Given a large list of Transactions, write a thread-safe parallel stream query to compute the total, average, and maximum amount for category "INVESTMENT". Return a DoubleSummaryStatistics object.',
+        initialCode: 'public DoubleSummaryStatistics getStats(List<Transaction> txs) {\n    return txs.parallelStream()\n        // TODO: Filter category, map to double, get statistics\n        .summaryStatistics();\n}',
+        solutionCode: 'public DoubleSummaryStatistics getStats(List<Transaction> txs) {\n    return txs.parallelStream()\n        .filter(t -> "INVESTMENT".equals(t.getCategory()))\n        .mapToDouble(Transaction::getAmount)\n        .summaryStatistics();\n}',
+        explanation: 'Using `.parallelStream()` speeds up execution for large datasets. `mapToDouble()` allows calling `.summaryStatistics()` which aggregates count, sum, min, average, and max in a single thread-safe pass.'
+      },
+      {
+        id: 'str_h4',
+        title: 'Custom Collectors: LinkedHashSet',
+        description: 'Write a custom Collector that collects elements of a stream into an unmodifiable LinkedHashSet to keep elements unique, ordered, and immutable.',
+        initialCode: 'public <T> Set<T> collectToLinkedHashSet(Stream<T> stream) {\n    return stream.collect(\n        // TODO: Build a custom collector for unmodifiable LinkedHashSet\n        Collectors.toSet()\n    );\n}',
+        solutionCode: 'public <T> Set<T> collectToLinkedHashSet(Stream<T> stream) {\n    return stream.collect(Collector.of(\n        LinkedHashSet::new,       // supplier\n        Set::add,                 // accumulator\n        (left, right) -> {        // combiner\n            left.addAll(right);\n            return left;\n        },\n        Collections::unmodifiableSet // finisher\n    ));\n}',
+        explanation: 'We use `Collector.of` by providing:\n1. A supplier `LinkedHashSet::new` for unique ordered set creation.\n2. Accumulator `Set::add` to insert elements.\n3. Combiner `addAll` to merge sets for parallel execution.\n4. Finisher `Collections::unmodifiableSet` to lock modification.'
+      }
+    ]
+  },
+  dsa: {
+    easy: [
+      {
+        id: 'dsa_e1',
+        title: 'Reverse String in Place',
+        description: 'Write a function that reverses an array of characters in place. Do not allocate extra space; use O(1) extra memory.',
+        initialCode: 'public void reverseString(char[] s) {\n    // TODO: Reverse the array in-place\n}',
+        solutionCode: 'public void reverseString(char[] s) {\n    int left = 0, right = s.length - 1;\n    while (left < right) {\n        char temp = s[left];\n        s[left] = s[right];\n        s[right] = temp;\n        left++;\n        right--;\n    }\n}',
+        explanation: 'Using two pointers starting at both ends, we swap the characters at `left` and `right` and move the pointers toward the center until they meet.'
+      },
+      {
+        id: 'dsa_e2',
+        title: 'Valid Palindrome',
+        description: 'Given a string, determine if it is a palindrome, considering only alphanumeric characters and ignoring cases.',
+        initialCode: 'public boolean isPalindrome(String s) {\n    // TODO: Return true if s is a palindrome\n    return false;\n}',
+        solutionCode: 'public boolean isPalindrome(String s) {\n    int left = 0, right = s.length() - 1;\n    while (left < right) {\n        while (left < right && !Character.isLetterOrDigit(s.charAt(left))) left++;\n        while (left < right && !Character.isLetterOrDigit(s.charAt(right))) right--;\n        if (Character.toLowerCase(s.charAt(left)) != Character.toLowerCase(s.charAt(right))) {\n            return false;\n        }\n        left++;\n        right--;\n    }\n    return true;\n}',
+        explanation: 'We use two pointers `left` and `right`. Skip non-alphanumeric characters. Compare characters case-insensitively. If they differ, return false. If they cross, it is a palindrome.'
+      },
+      {
+        id: 'dsa_e3',
+        title: 'Two Sum',
+        description: 'Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target` in O(n) time.',
+        initialCode: 'public int[] twoSum(int[] nums, int target) {\n    // TODO: Find indices in O(n) time\n    return new int[]{-1, -1};\n}',
+        solutionCode: 'public int[] twoSum(int[] nums, int target) {\n    Map<Integer, Integer> map = new HashMap<>();\n    for (int i = 0; i < nums.length; i++) {\n        int complement = target - nums[i];\n        if (map.containsKey(complement)) {\n            return new int[] { map.get(complement), i };\n        }\n        map.put(nums[i], i);\n    }\n    return new int[]{-1, -1};\n}',
+        explanation: 'We use a HashMap to store the numbers we have visited and their indices. For each number, we check if its complement (target - num) exists in the map. If yes, we return their indices.'
+      },
+      {
+        id: 'dsa_e4',
+        title: 'FizzBuzz List Generation',
+        description: 'Given an integer `n`, return a list of strings representing the numbers from 1 to `n` with Fizz, Buzz, or FizzBuzz substitutions.',
+        initialCode: 'public List<String> fizzBuzz(int n) {\n    // TODO: Generate FizzBuzz strings\n    return new ArrayList<>();\n}',
+        solutionCode: 'public List<String> fizzBuzz(int n) {\n    List<String> result = new ArrayList<>();\n    for (int i = 1; i <= n; i++) {\n        if (i % 3 == 0 && i % 5 == 0) result.add("FizzBuzz");\n        else if (i % 3 == 0) result.add("Fizz");\n        else if (i % 5 == 0) result.add("Buzz");\n        else result.add(String.valueOf(i));\n    }\n    return result;\n}',
+        explanation: 'Iterate from 1 to n. For each number, check divisibility by both 3 and 5 first (FizzBuzz), then by 3 (Fizz), then by 5 (Buzz). Otherwise, append the number itself.'
+      }
+    ],
+    medium: [
+      {
+        id: 'dsa_m1',
+        title: 'Max Sum Subarray of Size K',
+        description: 'Given an array of positive integers and a number `k`, find the maximum sum of any contiguous subarray of size `k` in O(n) time.',
+        initialCode: 'public int findMaxSumSubarray(int[] arr, int k) {\n    // TODO: Implement Sliding Window\n    return 0;\n}',
+        solutionCode: 'public int findMaxSumSubarray(int[] arr, int k) {\n    int windowSum = 0, maxSum = 0;\n    for (int i = 0; i < arr.length; i++) {\n        windowSum += arr[i];\n        if (i >= k - 1) {\n            maxSum = Math.max(maxSum, windowSum);\n            windowSum -= arr[i - k + 1]; // slide window\n        }\n    }\n    return maxSum;\n}',
+        explanation: 'We use a sliding window of size `k`. First we sum elements in the window. As we slide the window right, we add the new element and subtract the left element that fell out, keeping complexity O(n).'
+      },
+      {
+        id: 'dsa_m2',
+        title: 'Valid Parentheses',
+        description: 'Given a string containing just the characters `(`, `)`, `{`, `}`, `[` and `]`, determine if the input string is valid.',
+        initialCode: 'public boolean isValid(String s) {\n    // TODO: Verify parentheses balance using stack\n    return false;\n}',
+        solutionCode: 'public boolean isValid(String s) {\n    Stack<Character> stack = new Stack<>();\n    for (char c : s.toCharArray()) {\n        if (c == \'(\') stack.push(\')\');\n        else if (c == \'{\') stack.push(\'}\');\n        else if (c == \'[\') stack.push(\']\');\n        else if (stack.isEmpty() || stack.pop() != c) return false;\n    }\n    return stack.isEmpty();\n}',
+        explanation: 'We traverse the string. When seeing an open bracket, we push its closing bracket onto the stack. When seeing a closing bracket, we pop and compare. The stack must be empty at the end.'
+      },
+      {
+        id: 'dsa_m3',
+        title: 'Binary Search First Occurrence',
+        description: 'Given a sorted array of integers containing duplicates, find the index of the first occurrence of a target element. Return -1 if not found.',
+        initialCode: 'public int findFirstOccurrence(int[] nums, int target) {\n    // TODO: Binary search first index\n    return -1;\n}',
+        solutionCode: 'public int findFirstOccurrence(int[] nums, int target) {\n    int left = 0, right = nums.length - 1, ans = -1;\n    while (left <= right) {\n        int mid = left + (right - left) / 2;\n        if (nums[mid] == target) {\n            ans = mid;\n            right = mid - 1; // keep searching left\n        } else if (nums[mid] < target) {\n            left = mid + 1;\n        } else {\n            right = mid - 1;\n        }\n    }\n    return ans;\n}',
+        explanation: 'We perform a standard binary search, but when `nums[mid] == target`, we save the index and restrict the search space to the left (`right = mid - 1`) to find earlier occurrences.'
+      },
+      {
+        id: 'dsa_m4',
+        title: 'Container With Most Water',
+        description: 'Given `n` non-negative integers representing heights of vertical lines, find two lines that, together with the x-axis, forms a container that holds the most water.',
+        initialCode: 'public int maxArea(int[] height) {\n    // TODO: Solve in O(n) time\n    return 0;\n}',
+        solutionCode: 'public int maxArea(int[] height) {\n    int maxArea = 0, left = 0, right = height.length - 1;\n    while (left < right) {\n        int h = Math.min(height[left], height[right]);\n        maxArea = Math.max(maxArea, h * (right - left));\n        if (height[left] < height[right]) left++;\n        else right--;\n    }\n    return maxArea;\n}',
+        explanation: 'We use two pointers at both ends. The area is width * min(height). To maximize area, we compute the area and slide the pointer pointing to the shorter line inward, aiming for taller boundaries.'
+      }
+    ],
+    hard: [
+      {
+        id: 'dsa_h1',
+        title: 'Merge Overlapping Intervals',
+        description: 'Given an array of intervals where `intervals[i] = [start_i, end_i]`, merge all overlapping intervals.',
+        initialCode: 'public int[][] merge(int[][] intervals) {\n    // TODO: Sort and merge intervals\n    return new int[0][0];\n}',
+        solutionCode: 'public int[][] merge(int[][] intervals) {\n    if (intervals.length <= 1) return intervals;\n    Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));\n    List<int[]> result = new ArrayList<>();\n    result.add(intervals[0]);\n    for (int i = 1; i < intervals.length; i++) {\n        int[] last = result.get(result.size() - 1);\n        if (intervals[i][0] <= last[1]) {\n            last[1] = Math.max(last[1], intervals[i][1]);\n        } else {\n            result.add(intervals[i]);\n        }\n    }\n    return result.toArray(new int[result.size()][]);\n}',
+        explanation: 'First sort intervals by start time. Then iterate and compare the current interval with the last merged interval. If they overlap, merge by adjusting end; otherwise add new.'
+      },
+      {
+        id: 'dsa_h2',
+        title: 'Longest Substring Without Repeating Characters',
+        description: 'Given a string, find the length of the longest substring without repeating characters in O(n) time.',
+        initialCode: 'public int lengthOfLongestSubstring(String s) {\n    // TODO: Implement sliding window with character set/map\n    return 0;\n}',
+        solutionCode: 'public int lengthOfLongestSubstring(String s) {\n    Map<Character, Integer> map = new HashMap<>();\n    int maxLen = 0, left = 0;\n    for (int right = 0; right < s.length(); right++) {\n        char c = s.charAt(right);\n        if (map.containsKey(c)) {\n            left = Math.max(left, map.get(c) + 1); // shrink window\n        }\n        map.put(c, right);\n        maxLen = Math.max(maxLen, right - left + 1);\n    }\n    return maxLen;\n}',
+        explanation: 'We use a sliding window with pointers `left` and `right`. A map stores the last seen index of each character. When a repeating character is found inside the window, we slide `left` to one position past its previous index.'
+      },
+      {
+        id: 'dsa_h3',
+        title: 'Coin Change (Min Coins)',
+        description: 'Given an integer array of coin denominations and a target amount, write a bottom-up Dynamic Programming function to find the minimum number of coins needed to make up that amount.',
+        initialCode: 'public int coinChange(int[] coins, int amount) {\n    // TODO: Dynamic programming bottom-up solution\n    return -1;\n}',
+        solutionCode: 'public int coinChange(int[] coins, int amount) {\n    int[] dp = new int[amount + 1];\n    Arrays.fill(dp, amount + 1);\n    dp[0] = 0;\n    for (int i = 1; i <= amount; i++) {\n        for (int coin : coins) {\n            if (i - coin >= 0) {\n                dp[i] = Math.min(dp[i], dp[i - coin] + 1);\n            }\n        }\n    }\n    return dp[amount] > amount ? -1 : dp[amount];\n}',
+        explanation: 'We use a DP table of size amount + 1. Base case is `dp[0] = 0`. For each amount from 1 to `amount`, we try all coin denominations. If coin ≤ amount, then `dp[amount] = min(dp[amount], dp[amount - coin] + 1)`. Return -1 if unreachable.'
+      },
+      {
+        id: 'dsa_h4',
+        title: 'Detect Cycle in Linked List',
+        description: 'Given the head of a singly linked list, determine if the list has a cycle in it using O(1) memory.',
+        initialCode: 'public boolean hasCycle(ListNode head) {\n    // TODO: Floyd\'s cycle detection algorithm\n    return false;\n}',
+        solutionCode: 'public boolean hasCycle(ListNode head) {\n    if (head == null) return false;\n    ListNode slow = head, fast = head;\n    while (fast != null && fast.next != null) {\n        slow = slow.next;\n        fast = fast.next.next;\n        if (slow == fast) return true;\n    }\n    return false;\n}',
+        explanation: 'We use Floyd\'s cycle detection (Tortoise and Hare). The `slow` pointer moves 1 step; the `fast` pointer moves 2 steps. If a cycle exists, they will eventually meet.'
+      }
+    ]
+  }
+};

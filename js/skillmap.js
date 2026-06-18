@@ -74,6 +74,7 @@ window.SkillMap = {
   },
 
   openTopicHub(catId, topicId) {
+    if (window.SoundEffects) window.SoundEffects.playClick();
     const category = window.CATEGORIES.find(c => c.id === catId);
     if (!category) return;
     const topic = category.topics.find(t => t.id === topicId);
@@ -145,6 +146,7 @@ window.SkillMap = {
   },
 
   closeTopicHub() {
+    if (window.SoundEffects) window.SoundEffects.playClick();
     const modal = document.getElementById('topic-hub-modal');
     if (modal) modal.classList.remove('active');
   },
